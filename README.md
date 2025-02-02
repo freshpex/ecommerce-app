@@ -39,7 +39,7 @@ Check out the live demo of the application [here](https://ecommerceappb.vercel.a
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/ecommerce-app.git
+   git clone https://github.com/freshpex/ecommerce-app.git
    ```
 2. Navigate to the project directory:
    ```bash
