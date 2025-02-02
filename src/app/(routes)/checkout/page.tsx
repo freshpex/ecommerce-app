@@ -6,6 +6,7 @@ import CartItem from '@/components/CartItem';
 import { ShippingDetails } from '@/types';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
   const { cart, totalAmount, clearCart, setShippingDetails, closeCart } = useStore();
@@ -17,6 +18,7 @@ export default function CheckoutPage() {
     email: '',
   });
   const [errors, setErrors] = useState<Partial<ShippingDetails>>({});
+  const router = useRouter();
 
   const validateForm = () => {
     const newErrors: Partial<ShippingDetails> = {};
@@ -46,6 +48,11 @@ export default function CheckoutPage() {
     toast.success('Order placed successfully!');
   };
 
+  const handleCloseCart = () => {
+    closeCart();
+    router.push('/');
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 dark:text-white">Checkout</h1>
@@ -59,6 +66,20 @@ export default function CheckoutPage() {
           ))}
           <div className="mt-4 text-xl font-semibold dark:text-white">
             Total: ${totalAmount.toFixed(2)}
+          </div>
+          <div className="mt-4 flex gap-4">
+            <button
+              onClick={handleCloseCart}
+              className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
+            >
+              Close Cart
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            >
+              Continue Shopping
+            </button>
           </div>
         </div>
         <div>
