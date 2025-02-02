@@ -3,15 +3,17 @@
 import { useEffect, useState } from 'react';
 import { Product } from '@/types';
 import ProductCard from './ProductCard';
-import { useTheme } from 'next-themes';
 import LoadingSpinner from './LoadingSpinner';
+import ProductModal from './ProductModal';
+import Pagination from './Pagination';
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const { theme, setTheme } = useTheme();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -33,13 +35,32 @@ export default function ProductList() {
     product.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const productsPerPage = 10;
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const displayedProducts = filteredProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null);
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold dark:text-white">Products</h1>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold dark:text-white mb-4 md:mb-0">Products</h1>
         <div className="flex items-center gap-4">
           <input
             type="text"
@@ -48,19 +69,15 @@ export default function ProductList() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="px-4 py-2 border rounded"
           />
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded bg-gray-200 dark:bg-gray-700"
-          >
-            Toggle Theme
-          </button>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {displayedProducts.map((product) => (
+          <ProductCard key={product.id} product={product} onClick={() => handleProductClick(product)} />
         ))}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+      {selectedProduct && <ProductModal product={selectedProduct} onClose={closeModal} />}
     </div>
   );
 }

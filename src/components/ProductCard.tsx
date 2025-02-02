@@ -8,9 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 interface ProductCardProps {
   product: Product;
+  onClick: () => void;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, onClick }: ProductCardProps) {
   const addToCart = useStore((state) => state.addToCart);
 
   const handleAddToCart = () => {
@@ -19,7 +20,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+    <div onClick={onClick} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transform transition-transform hover:scale-105 cursor-pointer">
       <div className="relative h-48 w-full mb-4">
         <Image
           src={product.image}
@@ -35,8 +36,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         ${product.price.toFixed(2)}
       </p>
       <button
-        onClick={handleAddToCart}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAddToCart();
+        }}
+        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-4 rounded hover:from-blue-600 hover:to-purple-700 transition-colors"
       >
         Add to Cart
       </button>

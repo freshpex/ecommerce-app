@@ -13,6 +13,8 @@ interface StoreState {
   setShippingDetails: (details: ShippingDetails) => void;
   isCartOpen: boolean;
   closeCart: () => void;
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -27,6 +29,7 @@ export const useStore = create<StoreState>()(
         email: '',
       },
       isCartOpen: false,
+      isSidebarOpen: true,
       addToCart: (product) =>
         set((state) => {
           const existingItem = get().cart.find((item) => item.id === product.id);
@@ -69,6 +72,7 @@ export const useStore = create<StoreState>()(
       clearCart: () => set({ cart: [], totalAmount: 0, shippingDetails: { name: '', address: '', phone: '', email: '' }, isCartOpen: false }),
       setShippingDetails: (details) => set({ shippingDetails: details }),
       closeCart: () => set({ isCartOpen: false }),
+      toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
     }),
     {
       name: 'cart-storage',
