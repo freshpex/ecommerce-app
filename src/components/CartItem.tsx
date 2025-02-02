@@ -14,7 +14,6 @@ export default function CartItem({ item }: CartItemProps) {
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow empty input for backspace/delete operations
     if (value === '') {
       updateQuantity(item.id, 1);
       return;
@@ -37,8 +36,8 @@ export default function CartItem({ item }: CartItemProps) {
   };
 
   return (
-    <div className="flex items-center gap-4 py-4 border-b dark:border-gray-700">
-      <div className="relative h-20 w-20">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4 border-b dark:border-gray-700">
+      <div className="relative h-20 w-20 mx-auto sm:mx-0">
         <Image
           src={item.image}
           alt={item.title}
@@ -46,14 +45,14 @@ export default function CartItem({ item }: CartItemProps) {
           className="object-contain"
         />
       </div>
-      <div className="flex-1">
-        <h4 className="font-semibold dark:text-white">{item.title}</h4>
+      <div className="flex-1 text-center sm:text-left">
+        <h4 className="font-semibold dark:text-white line-clamp-2">{item.title}</h4>
         <p className="text-gray-600 dark:text-gray-300">
           ${item.price.toFixed(2)}
         </p>
       </div>
-      <div className="flex items-center gap-2">
-        <div className="flex items-center border rounded-lg dark:border-gray-600">
+      <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center border rounded-lg dark:border-gray-600 w-full sm:w-auto justify-center">
           <button
             onClick={decrementQuantity}
             className="px-3 py-1 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-l-lg transition-colors"
@@ -77,7 +76,7 @@ export default function CartItem({ item }: CartItemProps) {
         </div>
         <button
           onClick={() => removeFromCart(item.id)}
-          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors w-full sm:w-auto"
           title="Remove item"
         >
           <FiTrash2 size={18} />

@@ -6,7 +6,7 @@ import { IoClose } from 'react-icons/io5';
 import { BsWindow, BsWindowStack } from 'react-icons/bs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FiHome, FiShoppingCart } from 'react-icons/fi';
+import { FiHome, FiShoppingCart, FiActivity } from 'react-icons/fi';
 
 interface MenuItem {
   icon: React.ReactElement;
@@ -100,6 +100,11 @@ const menuItems = [
     icon: <FiShoppingCart size={20} />,
     label: 'Checkout',
     href: '/checkout'
+  },
+  {
+    icon: <FiActivity size={20} />,
+    label: 'Orders',
+    href: '/orders'
   },
   // More items for further developement
 ];

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CartItem, Product, ShippingDetails } from '@/types';
+import { CartItem, Product, ShippingDetails, WishlistItem, Order, Review, SortOption } from '@/types';
 
 interface StoreState {
   cart: CartItem[];
@@ -17,6 +17,17 @@ interface StoreState {
   toggleSidebar: () => void;
   isDesktopSidebarOpen: boolean;
   toggleDesktopSidebar: () => void;
+  wishlist: WishlistItem[];
+  addToWishlist: (product: Product) => void;
+  removeFromWishlist: (productId: number) => void;
+  orders: Order[];
+  addOrder: (order: Omit<Order, 'id' | 'createdAt'>) => void;
+  reviews: Review[];
+  addReview: (review: Omit<Review, 'id' | 'createdAt'>) => void;
+  sortOption: SortOption;
+  setSortOption: (option: SortOption) => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -33,6 +44,11 @@ export const useStore = create<StoreState>()(
       isCartOpen: false,
       isSidebarOpen: true,
       isDesktopSidebarOpen: true,
+      wishlist: [],
+      orders: [],
+      reviews: [],
+      sortOption: 'name-asc',
+      selectedCategory: 'all',
       addToCart: (product) =>
         set((state) => {
           const existingItem = get().cart.find((item) => item.id === product.id);
@@ -77,6 +93,41 @@ export const useStore = create<StoreState>()(
       closeCart: () => set({ isCartOpen: false }),
       toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
       toggleDesktopSidebar: () => set((state) => ({ isDesktopSidebarOpen: !state.isDesktopSidebarOpen })),
+      addToWishlist: (product) =>
+        set((state) => ({
+          wishlist: [
+            ...state.wishlist,
+            { ...product, addedAt: new Date().toISOString() },
+          ],
+        })),
+      removeFromWishlist: (productId) =>
+        set((state) => ({
+          wishlist: state.wishlist.filter((item) => item.id !== productId),
+        })),
+      addOrder: (order) =>
+        set((state) => ({
+          orders: [
+            ...state.orders,
+            {
+              ...order,
+              id: Date.now().toString(),
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })),
+      addReview: (review) =>
+        set((state) => ({
+          reviews: [
+            ...state.reviews,
+            {
+              ...review,
+              id: Date.now(),
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })),
+      setSortOption: (option) => set({ sortOption: option }),
+      setSelectedCategory: (category) => set({ selectedCategory: category }),
     }),
     {
       name: 'cart-storage',

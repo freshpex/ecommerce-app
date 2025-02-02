@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import CartItem from '@/components/CartItem';
-import { ShippingDetails } from '@/types';
+import { ShippingDetails, OrderInput } from '@/types';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { FiShoppingBag, FiArrowLeft, FiCheck, FiTruck } from 'react-icons/fi';
+import PaymentSection from '@/components/PaymentSection';
+import { sendOrderConfirmationEmail } from '@/utils/emailService';
 
 export default function CheckoutPage() {
-  const { cart, totalAmount, clearCart, setShippingDetails, closeCart } = useStore();
+  const { cart, totalAmount, clearCart, setShippingDetails, closeCart, addOrder } = useStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [shippingDetails, setLocalShippingDetails] = useState<ShippingDetails>({
     name: '',
@@ -18,6 +20,8 @@ export default function CheckoutPage() {
     email: '',
   });
   const [errors, setErrors] = useState<Partial<ShippingDetails>>({});
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('credit_card');
+  const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
 
   const validateForm = () => {
@@ -41,18 +45,45 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleConfirm = () => {
-    clearCart();
-    closeCart();
-    setShowConfirmation(false);
-    toast.success('Order placed successfully!');
+  const handleConfirm = async () => {
+    setIsProcessing(true);
+    try {
+      const orderInput: OrderInput = {
+        items: cart,
+        totalAmount,
+        shippingDetails,
+        status: 'pending' as const,
+        paymentMethod: selectedPaymentMethod,
+      };
+
+      // First create the order to get the ID
+      const createdOrder = {
+        ...orderInput,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+
+      addOrder(orderInput);
+      await sendOrderConfirmationEmail(createdOrder, shippingDetails);
+      
+      clearCart();
+      closeCart();
+      setShowConfirmation(false);
+      toast.success('Order placed successfully! Check your email for confirmation.');
+      router.push('/orders');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error(`Failed to process order. Please try again. ${errorMessage}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Progress Bar */}
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
           <button
             onClick={() => router.push('/')}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors"
@@ -63,19 +94,20 @@ export default function CheckoutPage() {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-2 text-blue-600">
               <FiShoppingBag />
-              Cart
+              <span className="hidden sm:inline">Cart</span>
             </span>
             <span className="h-px w-8 bg-gray-300 dark:bg-gray-600" />
             <span className="flex items-center gap-2">
               <FiTruck />
-              Shipping
+              <span className="hidden sm:inline">Shipping</span>
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Cart Items Section */}
-          <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+        {/* Main Content - Improve mobile layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
+          {/* Cart Section */}
+          <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 lg:p-6">
             <h2 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2">
               <FiShoppingBag /> Your Cart
             </h2>
@@ -117,8 +149,8 @@ export default function CheckoutPage() {
           </div>
 
           {/* Shipping Form Section */}
-          <div className="lg:col-span-5">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          <div className="lg:col-span-5 order-first lg:order-last">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 lg:p-6">
               <h2 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2">
                 <FiTruck /> Shipping Details
               </h2>
@@ -166,6 +198,11 @@ export default function CheckoutPage() {
                   </div>
                 ))}
 
+                <PaymentSection
+                  onSelect={setSelectedPaymentMethod}
+                  selectedMethod={selectedPaymentMethod}
+                />
+
                 <button
                   type="submit"
                   disabled={cart.length === 0}
@@ -181,8 +218,8 @@ export default function CheckoutPage() {
 
       {/* Confirmation Modal */}
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-8 max-w-md w-full mx-auto">
             <h3 className="text-2xl font-bold mb-4 dark:text-white">
               Confirm Order
             </h3>
@@ -194,13 +231,17 @@ export default function CheckoutPage() {
                 <p className="text-gray-600 dark:text-gray-300">
                   Shipping to: {shippingDetails.name}
                 </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Payment Method: {selectedPaymentMethod}
+                </p>
               </div>
               <div className="flex gap-4">
                 <button
                   onClick={handleConfirm}
-                  className="flex-1 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  disabled={isProcessing}
+                  className="flex-1 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                 >
-                  Confirm Order
+                  {isProcessing ? 'Processing...' : 'Confirm Order'}
                 </button>
                 <button
                   onClick={() => setShowConfirmation(false)}
