@@ -6,6 +6,8 @@ import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 import { FaBars, FaShoppingCart } from 'react-icons/fa';
 import { FaSun, FaMoon } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import { useLoading } from '@/contexts/LoadingContext';
 
 export default function Header() {
   const cart = useStore((state) => state.cart);
@@ -13,6 +15,14 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const toggleSidebar = useStore((state) => state.toggleSidebar);
+  const router = useRouter();
+  const { setIsLoading } = useLoading();
+
+  const handleNavigation = async (path: string) => {
+    setIsLoading(true);
+    await router.push(path);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -35,13 +45,13 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <Link 
-            href="/checkout" 
+          <button 
+            onClick={() => handleNavigation('/checkout')}
             className="flex items-center gap-2 hover:text-gray-200 transition-colors"
           >
             <FaShoppingCart size={24} />
             <span>Cart ({totalItems})</span>
-          </Link>
+          </button>
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="p-2 rounded hover:bg-blue-600"

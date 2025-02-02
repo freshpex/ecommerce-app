@@ -4,9 +4,10 @@ import { useStore } from '@/store/useStore';
 import { useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { BsWindow, BsWindowStack } from 'react-icons/bs';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiHome, FiShoppingCart, FiActivity } from 'react-icons/fi';
+import { useRouter } from 'next/navigation';
+import { useLoading } from '@/contexts/LoadingContext';
 
 interface MenuItem {
   icon: React.ReactElement;
@@ -18,6 +19,8 @@ export default function Sidebar() {
   const [isMobile, setIsMobile] = useState(false);
   const { isSidebarOpen, toggleSidebar, isDesktopSidebarOpen, toggleDesktopSidebar } = useStore();
   const pathname = usePathname();
+  const router = useRouter();
+  const { setIsLoading } = useLoading();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -36,12 +39,21 @@ export default function Sidebar() {
         isDesktopSidebarOpen ? 'sidebar-expanded' : 'sidebar-collapsed'
       }`;
 
+  const handleNavigation = async (href: string) => {
+    setIsLoading(true);
+    if (isMobile) {
+      toggleSidebar();
+    }
+    await router.push(href);
+    setIsLoading(false);
+  };
+
   const renderMenuItem = (item: MenuItem) => {
     const isActive = pathname === item.href;
     return (
-      <Link
-        href={item.href}
-        className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${
+      <button
+        onClick={() => handleNavigation(item.href)}
+        className={`flex items-center gap-4 p-3 rounded-lg transition-colors w-full text-left ${
           isActive
             ? 'bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
             : 'hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -51,7 +63,7 @@ export default function Sidebar() {
         {(isMobile ? isSidebarOpen : isDesktopSidebarOpen) && (
           <span className="whitespace-nowrap">{item.label}</span>
         )}
-      </Link>
+      </button>
     );
   };
 

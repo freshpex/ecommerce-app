@@ -148,8 +148,8 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          {/* Shipping Form Section */}
-          <div className="lg:col-span-5 order-first lg:order-last">
+          {/* Shipping Form Section*/}
+          <div className="lg:col-span-5">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 lg:p-6">
               <h2 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2">
                 <FiTruck /> Shipping Details
