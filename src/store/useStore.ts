@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { CartItem, Product, ShippingDetails } from '@/types';
 
 interface StoreState {
   cart: CartItem[];
@@ -8,6 +9,10 @@ interface StoreState {
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   totalAmount: number;
+  shippingDetails: ShippingDetails;
+  setShippingDetails: (details: ShippingDetails) => void;
+  isCartOpen: boolean;
+  closeCart: () => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -15,9 +20,16 @@ export const useStore = create<StoreState>()(
     (set, get) => ({
       cart: [],
       totalAmount: 0,
+      shippingDetails: {
+        name: '',
+        address: '',
+        phone: '',
+        email: '',
+      },
+      isCartOpen: false,
       addToCart: (product) =>
         set((state) => {
-          const existingItem = state.cart.find((item) => item.id === product.id);
+          const existingItem = get().cart.find((item) => item.id === product.id);
           if (existingItem) {
             return {
               cart: state.cart.map((item) =>
@@ -34,13 +46,17 @@ export const useStore = create<StoreState>()(
           };
         }),
       removeFromCart: (productId) =>
-        set((state) => ({
-          cart: state.cart.filter((item) => item.id !== productId),
-          totalAmount: state.totalAmount - (state.cart.find((item) => item.id === productId)?.price ?? 0),
-        })),
+        set((state) => {
+          const item = get().cart.find((item) => item.id === productId);
+          if (!item) return state;
+          return {
+            cart: state.cart.filter((item) => item.id !== productId),
+            totalAmount: state.totalAmount - item.price * item.quantity,
+          };
+        }),
       updateQuantity: (productId, quantity) =>
         set((state) => {
-          const item = state.cart.find((item) => item.id === productId);
+          const item = get().cart.find((item) => item.id === productId);
           if (!item) return state;
           const priceDiff = (quantity - item.quantity) * item.price;
           return {
@@ -50,7 +66,9 @@ export const useStore = create<StoreState>()(
             totalAmount: state.totalAmount + priceDiff,
           };
         }),
-      clearCart: () => set({ cart: [], totalAmount: 0 }),
+      clearCart: () => set({ cart: [], totalAmount: 0, shippingDetails: { name: '', address: '', phone: '', email: '' }, isCartOpen: false }),
+      setShippingDetails: (details) => set({ shippingDetails: details }),
+      closeCart: () => set({ isCartOpen: false }),
     }),
     {
       name: 'cart-storage',

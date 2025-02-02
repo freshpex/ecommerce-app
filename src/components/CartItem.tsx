@@ -11,6 +11,13 @@ interface CartItemProps {
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeFromCart } = useStore();
 
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      updateQuantity(item.id, value);
+    }
+  };
+
   return (
     <div className="flex items-center gap-4 py-4 border-b">
       <div className="relative h-20 w-20">
@@ -32,7 +39,7 @@ export default function CartItem({ item }: CartItemProps) {
           type="number"
           min="1"
           value={item.quantity}
-          onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+          onChange={handleQuantityChange}
           className="w-16 px-2 py-1 border rounded"
         />
         <button

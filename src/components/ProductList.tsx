@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Product } from '@/types';
 import ProductCard from './ProductCard';
 import { useTheme } from 'next-themes';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,7 +23,7 @@ export default function ProductList() {
       const data = await response.json();
       setProducts(data);
     } catch (err) {
-      setError('Failed to fetch products');
+      setError(`Failed to fetch products: ${err}`);
     } finally {
       setLoading(false);
     }
@@ -32,7 +33,7 @@ export default function ProductList() {
     product.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (

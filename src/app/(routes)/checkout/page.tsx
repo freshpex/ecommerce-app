@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import CartItem from '@/components/CartItem';
 import { ShippingDetails } from '@/types';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CheckoutPage() {
-  const { cart, totalAmount, clearCart } = useStore();
+  const { cart, totalAmount, clearCart, setShippingDetails, closeCart } = useStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [shippingDetails, setShippingDetails] = useState<ShippingDetails>({
+  const [shippingDetails, setLocalShippingDetails] = useState<ShippingDetails>({
     name: '',
     address: '',
     phone: '',
@@ -32,13 +34,16 @@ export default function CheckoutPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
+      setShippingDetails(shippingDetails);
       setShowConfirmation(true);
     }
   };
 
   const handleConfirm = () => {
     clearCart();
+    closeCart();
     setShowConfirmation(false);
+    toast.success('Order placed successfully!');
   };
 
   return (
@@ -67,7 +72,7 @@ export default function CheckoutPage() {
                 type="text"
                 value={shippingDetails.name}
                 onChange={(e) =>
-                  setShippingDetails({ ...shippingDetails, name: e.target.value })
+                  setLocalShippingDetails({ ...shippingDetails, name: e.target.value })
                 }
                 className="w-full px-4 py-2 border rounded"
               />
@@ -80,7 +85,7 @@ export default function CheckoutPage() {
               <textarea
                 value={shippingDetails.address}
                 onChange={(e) =>
-                  setShippingDetails({
+                  setLocalShippingDetails({
                     ...shippingDetails,
                     address: e.target.value,
                   })
@@ -97,7 +102,7 @@ export default function CheckoutPage() {
                 type="tel"
                 value={shippingDetails.phone}
                 onChange={(e) =>
-                  setShippingDetails({ ...shippingDetails, phone: e.target.value })
+                  setLocalShippingDetails({ ...shippingDetails, phone: e.target.value })
                 }
                 className="w-full px-4 py-2 border rounded"
               />
@@ -111,7 +116,7 @@ export default function CheckoutPage() {
                 type="email"
                 value={shippingDetails.email}
                 onChange={(e) =>
-                  setShippingDetails({ ...shippingDetails, email: e.target.value })
+                  setLocalShippingDetails({ ...shippingDetails, email: e.target.value })
                 }
                 className="w-full px-4 py-2 border rounded"
               />
