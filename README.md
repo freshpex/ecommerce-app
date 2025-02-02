@@ -16,6 +16,10 @@ This project is a simplified e-commerce platform built with React, Next.js, Type
 - **Local Storage**: Cart data is persisted using local storage.
 - **Deployment**: The project is deployed using Vercel.
 
+## Live Demo
+
+Check out the live demo of the application [here](https://ecommerceappb.vercel.app).
+
 ## Technical Requirements
 
 - **Framework**: React (Next.js)

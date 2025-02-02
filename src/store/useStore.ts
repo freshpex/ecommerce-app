@@ -15,6 +15,8 @@ interface StoreState {
   closeCart: () => void;
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
+  isDesktopSidebarOpen: boolean;
+  toggleDesktopSidebar: () => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -30,6 +32,7 @@ export const useStore = create<StoreState>()(
       },
       isCartOpen: false,
       isSidebarOpen: true,
+      isDesktopSidebarOpen: true,
       addToCart: (product) =>
         set((state) => {
           const existingItem = get().cart.find((item) => item.id === product.id);
@@ -73,6 +76,7 @@ export const useStore = create<StoreState>()(
       setShippingDetails: (details) => set({ shippingDetails: details }),
       closeCart: () => set({ isCartOpen: false }),
       toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+      toggleDesktopSidebar: () => set((state) => ({ isDesktopSidebarOpen: !state.isDesktopSidebarOpen })),
     }),
     {
       name: 'cart-storage',

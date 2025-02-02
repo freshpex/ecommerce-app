@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --sidebar-width: 16rem;
+}
+
+.sidebar-transition {
+  transition: all 0.3s ease-in-out;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+
+.content-transition {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar-expanded {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+}
+
+.sidebar-collapsed {
+  width: 5rem;
+  min-height: 100vh;
+}
+
+/* Add custom scrollbar for sidebar */
+.sidebar-transition::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-transition::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-transition::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .sidebar-collapsed {
+    width: 0;
+  }
+}

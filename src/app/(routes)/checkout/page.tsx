@@ -5,8 +5,8 @@ import { useStore } from '@/store/useStore';
 import CartItem from '@/components/CartItem';
 import { ShippingDetails } from '@/types';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
+import { FiShoppingBag, FiArrowLeft, FiCheck, FiTruck } from 'react-icons/fi';
 
 export default function CheckoutPage() {
   const { cart, totalAmount, clearCart, setShippingDetails, closeCart } = useStore();
@@ -48,135 +48,167 @@ export default function CheckoutPage() {
     toast.success('Order placed successfully!');
   };
 
-  const handleCloseCart = () => {
-    closeCart();
-    router.push('/');
-  };
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 dark:text-white">Checkout</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-xl font-semibold mb-4 dark:text-white">
-            Your Cart
-          </h2>
-          {cart.map((item) => (
-            <CartItem key={item.id} item={item} />
-          ))}
-          <div className="mt-4 text-xl font-semibold dark:text-white">
-            Total: ${totalAmount.toFixed(2)}
-          </div>
-          <div className="mt-4 flex gap-4">
-            <button
-              onClick={handleCloseCart}
-              className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
-            >
-              Close Cart
-            </button>
-            <button
-              onClick={() => router.push('/')}
-              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-            >
-              Continue Shopping
-            </button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Progress Bar */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors"
+          >
+            <FiArrowLeft />
+            Continue Shopping
+          </button>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-2 text-blue-600">
+              <FiShoppingBag />
+              Cart
+            </span>
+            <span className="h-px w-8 bg-gray-300 dark:bg-gray-600" />
+            <span className="flex items-center gap-2">
+              <FiTruck />
+              Shipping
+            </span>
           </div>
         </div>
-        <div>
-          <h2 className="text-xl font-semibold mb-4 dark:text-white">
-            Shipping Details
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block dark:text-white">Name</label>
-              <input
-                type="text"
-                value={shippingDetails.name}
-                onChange={(e) =>
-                  setLocalShippingDetails({ ...shippingDetails, name: e.target.value })
-                }
-                className="w-full px-4 py-2 border rounded"
-              />
-              {errors.name && (
-                <p className="text-red-600 text-sm">{errors.name}</p>
-              )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Cart Items Section */}
+          <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+            <h2 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2">
+              <FiShoppingBag /> Your Cart
+            </h2>
+            
+            {cart.length > 0 ? (
+              <div className="space-y-4">
+                {cart.map((item) => (
+                  <CartItem key={item.id} item={item} />
+                ))}
+                <div className="mt-6 space-y-4">
+                  <div className="flex justify-between text-lg font-semibold dark:text-white">
+                    <span>Subtotal:</span>
+                    <span>${totalAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                    <span>Shipping:</span>
+                    <span>Calculated at next step</span>
+                  </div>
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between text-xl font-bold dark:text-white">
+                      <span>Total:</span>
+                      <span>${totalAmount.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FiShoppingBag className="mx-auto h-12 w-12 text-gray-400" />
+                <p className="mt-4 text-gray-600 dark:text-gray-300">Your cart is empty</p>
+                <button
+                  onClick={() => router.push('/')}
+                  className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Start Shopping
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Shipping Form Section */}
+          <div className="lg:col-span-5">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+              <h2 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2">
+                <FiTruck /> Shipping Details
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {Object.entries({
+                  name: "Full Name",
+                  email: "Email Address",
+                  phone: "Phone Number",
+                  address: "Shipping Address"
+                }).map(([key, label]) => (
+                  <div key={key}>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {label}
+                    </label>
+                    {key === 'address' ? (
+                      <textarea
+                        value={shippingDetails[key as keyof ShippingDetails]}
+                        onChange={(e) =>
+                          setLocalShippingDetails({
+                            ...shippingDetails,
+                            [key]: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        rows={3}
+                      />
+                    ) : (
+                      <input
+                        type={key === 'email' ? 'email' : 'text'}
+                        value={shippingDetails[key as keyof ShippingDetails]}
+                        onChange={(e) =>
+                          setLocalShippingDetails({
+                            ...shippingDetails,
+                            [key]: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      />
+                    )}
+                    {errors[key as keyof ShippingDetails] && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors[key as keyof ShippingDetails]}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                <button
+                  type="submit"
+                  disabled={cart.length === 0}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <FiCheck /> Place Order
+                </button>
+              </form>
             </div>
-            <div>
-              <label className="block dark:text-white">Address</label>
-              <textarea
-                value={shippingDetails.address}
-                onChange={(e) =>
-                  setLocalShippingDetails({
-                    ...shippingDetails,
-                    address: e.target.value,
-                  })
-                }
-                className="w-full px-4 py-2 border rounded"
-              />
-              {errors.address && (
-                <p className="text-red-600 text-sm">{errors.address}</p>
-              )}
-            </div>
-            <div>
-              <label className="block dark:text-white">Phone</label>
-              <input
-                type="tel"
-                value={shippingDetails.phone}
-                onChange={(e) =>
-                  setLocalShippingDetails({ ...shippingDetails, phone: e.target.value })
-                }
-                className="w-full px-4 py-2 border rounded"
-              />
-              {errors.phone && (
-                <p className="text-red-600 text-sm">{errors.phone}</p>
-              )}
-            </div>
-            <div>
-              <label className="block dark:text-white">Email</label>
-              <input
-                type="email"
-                value={shippingDetails.email}
-                onChange={(e) =>
-                  setLocalShippingDetails({ ...shippingDetails, email: e.target.value })
-                }
-                className="w-full px-4 py-2 border rounded"
-              />
-              {errors.email && (
-                <p className="text-red-600 text-sm">{errors.email}</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
-            >
-              Place Order
-            </button>
-          </form>
+          </div>
         </div>
       </div>
 
+      {/* Confirmation Modal */}
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg">
-            <h3 className="text-xl font-semibold mb-4 dark:text-white">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-2xl font-bold mb-4 dark:text-white">
               Confirm Order
             </h3>
-            <p className="dark:text-gray-300">
-              Are you sure you want to place this order?
-            </p>
-            <div className="mt-4 flex gap-4">
-              <button
-                onClick={handleConfirm}
-                className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => setShowConfirmation(false)}
-                className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
-              >
-                Cancel
-              </button>
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <p className="text-gray-600 dark:text-gray-300">
+                  Total Amount: ${totalAmount.toFixed(2)}
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Shipping to: {shippingDetails.name}
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleConfirm}
+                  className="flex-1 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Confirm Order
+                </button>
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="flex-1 py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
