@@ -93,47 +93,75 @@ export default function ProductList() {
   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold dark:text-white mb-4 md:mb-0">Products</h1>
-        <div className="flex items-center gap-4">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 border rounded"
-          />
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border rounded dark:bg-gray-800 dark:border-gray-600"
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </option>
-            ))}
-          </select>
+    <div className="space-y-6">
+      {/* Mobile-friendly header and controls */}
+      <div className="space-y-4">
+        <h1 className="text-2xl sm:text-3xl font-bold dark:text-white text-center sm:text-left">
+          Products
+        </h1>
+        
+        <div className="flex flex-col gap-3">
+          {/* Search bar - full width on mobile */}
+          <div className="w-full">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            />
+          </div>
 
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="px-4 py-2 border rounded dark:bg-gray-800 dark:border-gray-600"
-          >
-            <option value="name-asc">Name (A-Z)</option>
-            <option value="name-desc">Name (Z-A)</option>
-            <option value="price-asc">Price (Low to High)</option>
-            <option value="price-desc">Price (High to Low)</option>
-          </select>
+          {/* Filters row - stack on mobile, side by side on tablet+ */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full sm:w-auto px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Categories</option>
+              {categories.filter(cat => cat !== 'all').map((category) => (
+                <option key={category} value={category}>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              className="w-full sm:w-auto px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            >
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="price-asc">Price (Low to High)</option>
+              <option value="price-desc">Price (High to Low)</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+      {/* Products grid - adjust columns for different screen sizes */}
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {displayedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} onClick={() => handleProductClick(product)} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            onClick={() => handleProductClick(product)}
+          />
         ))}
       </div>
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+
+      {/* Make pagination more compact on mobile */}
+      <div className="mt-6">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </div>
+
+      {/* Modal remains unchanged */}
       {selectedProduct && <ProductModal product={selectedProduct} onClose={closeModal} />}
     </div>
   );
