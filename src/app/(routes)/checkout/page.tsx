@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { FiShoppingBag, FiArrowLeft, FiCheck, FiTruck } from 'react-icons/fi';
 import PaymentSection from '@/components/PaymentSection';
 import { sendOrderConfirmationEmail } from '@/utils/emailService';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 export default function CheckoutPage() {
   const { cart, totalAmount, clearCart, setShippingDetails, closeCart, addOrder } = useStore();
@@ -120,7 +121,7 @@ export default function CheckoutPage() {
                 <div className="mt-6 space-y-4">
                   <div className="flex justify-between text-lg font-semibold dark:text-white">
                     <span>Subtotal:</span>
-                    <span>${totalAmount.toFixed(2)}</span>
+                    <span>${formatCurrency(totalAmount)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Shipping:</span>
@@ -129,7 +130,7 @@ export default function CheckoutPage() {
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-xl font-bold dark:text-white">
                       <span>Total:</span>
-                      <span>${totalAmount.toFixed(2)}</span>
+                      <span>${formatCurrency(totalAmount)}</span>
                     </div>
                   </div>
                 </div>
@@ -226,7 +227,7 @@ export default function CheckoutPage() {
             <div className="space-y-4">
               <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <p className="text-gray-600 dark:text-gray-300">
-                  Total Amount: ${totalAmount.toFixed(2)}
+                  Total Amount: ${formatCurrency(totalAmount)}
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   Shipping to: {shippingDetails.name}

@@ -3,6 +3,7 @@
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import { FiPackage } from 'react-icons/fi';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 export default function OrderHistory() {
   const { orders } = useStore();
@@ -34,7 +35,7 @@ export default function OrderHistory() {
               
               <div className="border-t dark:border-gray-700 pt-4 mt-4">
                 <p className="font-semibold dark:text-white">
-                  Total: ${order.totalAmount.toFixed(2)}
+                  Total: ${formatCurrency(order.totalAmount)}
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   Items: {order.items.length}

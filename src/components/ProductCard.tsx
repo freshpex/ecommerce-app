@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useStore } from '@/store/useStore';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 interface ProductCardProps {
   product: Product;
@@ -33,7 +34,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
         {product.title}
       </h3>
       <p className="text-gray-600 dark:text-gray-300 mb-4">
-        ${product.price.toFixed(2)}
+        ${formatCurrency(product.price)}
       </p>
       <button
         onClick={(e) => {

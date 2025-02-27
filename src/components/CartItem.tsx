@@ -4,6 +4,7 @@ import { CartItem as CartItemType } from '@/types';
 import Image from 'next/image';
 import { useStore } from '@/store/useStore';
 import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 interface CartItemProps {
   item: CartItemType;
@@ -48,7 +49,7 @@ export default function CartItem({ item }: CartItemProps) {
       <div className="flex-1 text-center sm:text-left">
         <h4 className="font-semibold dark:text-white line-clamp-2">{item.title}</h4>
         <p className="text-gray-600 dark:text-gray-300">
-          ${item.price.toFixed(2)}
+          ${formatCurrency(item.price)}
         </p>
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">

@@ -3,6 +3,7 @@
 import { Product } from '@/types';
 import Image from 'next/image';
 import { FaTimes } from 'react-icons/fa';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 interface ProductModalProps {
   product: Product;
@@ -28,7 +29,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
           {product.title}
         </h3>
         <p className="text-gray-600 dark:text-gray-300 mb-4">
-          ${product.price.toFixed(2)}
+          {formatCurrency(product.price)}
         </p>
         <p className="text-gray-600 dark:text-gray-300">
           {product.description}

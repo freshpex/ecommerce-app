@@ -94,14 +94,13 @@ export default function ProductList() {
 
   return (
     <div className="space-y-6">
-      {/* Mobile-friendly header and controls */}
       <div className="space-y-4">
         <h1 className="text-2xl sm:text-3xl font-bold dark:text-white text-center sm:text-left">
           Products
         </h1>
         
         <div className="flex flex-col gap-3">
-          {/* Search bar - full width on mobile */}
+          {/* Search bar*/}
           <div className="w-full">
             <input
               type="text"
@@ -112,7 +111,7 @@ export default function ProductList() {
             />
           </div>
 
-          {/* Filters row - stack on mobile, side by side on tablet+ */}
+          {/* Filters row */}
           <div className="flex flex-col sm:flex-row gap-3">
             <select
               value={selectedCategory}
@@ -141,7 +140,7 @@ export default function ProductList() {
         </div>
       </div>
 
-      {/* Products grid - adjust columns for different screen sizes */}
+      {/* Products grid*/}
       <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {displayedProducts.map((product) => (
           <ProductCard
@@ -152,7 +151,7 @@ export default function ProductList() {
         ))}
       </div>
 
-      {/* Make pagination more compact on mobile */}
+      {/* pagination*/}
       <div className="mt-6">
         <Pagination
           currentPage={currentPage}
@@ -161,7 +160,6 @@ export default function ProductList() {
         />
       </div>
 
-      {/* Modal remains unchanged */}
       {selectedProduct && <ProductModal product={selectedProduct} onClose={closeModal} />}
     </div>
   );
